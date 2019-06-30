@@ -14,36 +14,48 @@ Extract a set of patches $\phi_i(c), \phi_j(s)$ for  $\Phi(C), \Phi(S)$. The tar
 
 ## Usage
 
+If you want to visualize the loss of training process, you need to type `python -m visdom.server` to open visdom.
+
 `python main.py train ARGS`
 
 Possible ARGS are:
 
-    contentPath = "./images/content"   # Path of directory containing content images to be transformed
-    
-    stylePath = "./images/style"       # Path of directory containing style images to be transformed
-    
-    img_hsize = 256                     # Reshape the image to have new size
-    img_wsize = 256
-    patch_size = 3                     # Patch size of the style swap
-    relu_level = 3                     # Style swapping in different layers of VGG19
-    max_epoch = 2                      # Numbers of iterations
-    minibatch = 2                      # The batch size of each training
-    lambda_weight = 1e-5               # The weight of the total variation regularization
-    lr = 1e-2                          # The learning rate of Adam
-    beta1 = 0.9                        # The parameter of Adam_beta1
-    gpu = True                         # Flag to enables GPU to accelerate computations
-    out_dir = './outputs'              # Path of the directory store stylized images
+```
+content = "./images/content"       # Path of directory containing content images to be transformed
+
+style = "./images/style"           # Path of directory containing style images to be transformed
+
+img_size = 256                     # Reshape the image to have new size
+patch_size = 3                     # Patch size of the style swap
+relu_level = 3                     # Style swapping in different layers of VGG19
+max_epoch = 4                      # Numbers of iterations
+minibatch = 2                      # The batch size of each training
+tv_weight = 1e-6                   # The weight of the total variation regularization
+lr = 1e-3                          # The learning rate of Adam
+gpu = True                         # Flag to enables GPU to accelerate computations
+out_dir = './outputs'              # Path of the directory to store stylized images
+save_dir = './save_models'         # Path of the directory to store models
+vis = True                         # Use visdiom
+```
+
 ### Stylizing images:
 
 ```
-python main.py train --contentPath ./images/content/ --stylePath./images/style
+python main.py train --content ./images/content/ --style ./images/style
+python main.py train --content ./COCO_Mikiart/COCO/ --style ./COCO_Mikiart/Mikiart
+
+python main.py test --content ./images/content/bike.jpg --style ./images/style/starry_night.jpg
+python main.py test --content ./images/content/gentlecat.png --style ./images/style/woman-with-hat-matisse.jpg
+python main.py test --content ./images/content/sailboat.jpg --style ./images/style/sketch.jpg
 ```
 
 ### Examples:
 
-<img src="./outputs/bike_stylized_by_la_muse_epoch_1.png">
+<img src="./outputs/bike_stylized_by_starry_night.jpg" height="300px">
 
-<img src="./outputs/gentlecat_stylized_by_woman-with-hat-matisse_epoch_1.png">
+<img src="./outputs/gentlecat_stylized_by_woman-with-hat-matisse.jpg" height="300px">
 
-<img src="./outputs/tubingen_stylized_by_mondrian_epoch_1.png">
+<img src="./outputs/sailboat_stylized_by_sketch.jpg" height="300px">
+
+
 
