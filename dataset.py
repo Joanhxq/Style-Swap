@@ -1,23 +1,25 @@
-# -*- coding: utf-8 -*-
-
+import glob
+import numpy as np
 from torch.utils.data import Dataset
-import os
 from PIL import Image
 
+class PreprocessDataset(Dataset):
+    def __init__(self, content_dir, style_dir, train_trans):
+        content_images = glob.glob((content_dir + '/*'))
+        np.random.shuffle(content_images)
+        style_images = glob.glob((style_dir + '/*'))
+        np.random.shuffle(style_images)
+        self.images_pairs = list(zip(content_images, style_images))
+        self.transforms = train_trans
 
-class FlatFolderDataset(Dataset):
-    def __init__(self, root, transform):
-        super(FlatFolderDataset, self).__init__()
-        self.root = root
-        self.paths = os.listdir(self.root)
-        self.transform = transform
-        
-    def __getitem__(self, index):
-        path = self.paths[index]
-        img = Image.open(os.path.join(self.root, path)).convert('RGB')
-        img = self.transform(img)
-        img_name = path.split('.')[0]
-        return {'img': img, 'img_name': img_name}
-    
     def __len__(self):
-        return len(self.paths)
+        return len(self.images_pairs)
+
+    def __getitem__(self, index):
+        content_name, style_name = self.images_pairs[index]
+        content_image = Image.open(content_name).convert('RGB')
+        style_image = Image.open(style_name).convert('RGB')
+        if self.transforms:
+            content_image = self.transforms(content_image)
+            style_image = self.transforms(style_image)
+        return {'c_img': content_image, 'c_name': content_name, 's_img': style_image, 's_name': style_name}
